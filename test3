@@ -1,0 +1,12 @@
+program a34553 (asdas, sf);
+var a, b, t:integer;
+c, d : bool;
+e, r : bool;
+begin
+    read(a);
+    if (true and false) then
+        a := a + a
+    else
+        write(not(true));
+    write(a / 3 + 4)
+end.

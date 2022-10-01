@@ -1,0 +1,14 @@
+program a34553;
+var a, b, t:integer;
+c, d : bool;
+e, r : bool;
+begin
+    read(a);
+    repeat
+    begin
+        a := a - 1;
+        write(true and false);
+    end;
+    until a > 4;
+    write(a)
+end.
