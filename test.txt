@@ -1,19 +1,24 @@
 program a34553;
-var a:integer;
+var a, c:integer;
 b : array[1..5] of integer;
 begin
-    a := 10;
-    b[2] := 3;
-    b[3] := 4;
+    a:= 10;
+    c := 5;
+    read(c);
+    read(b[2]);
+    write(b[2]);
+    b[3] := 50;
     if a > 3 then
     begin
         a := 3;
-        a := a + 1;
+        b[2] := a + 10;
     end
     else
     begin
         a := 2;
-        a := 3;
+        a := 30;
     end;
+    write(b[2]);
+    write(b[3]);
     write(a)
 end.

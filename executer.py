@@ -7,14 +7,23 @@ class Executer():
     def execute(self):
         index = 0
         args = []
-
+        ind_arr = 0
+        array = []
         while index < len(self.pars.poliz):
             pc_el = self.pars.poliz[index]
             if pc_el[0] == "bool" or pc_el[0] == "int" or pc_el[0] == "poliz_address" or pc_el[0] == "poliz_label":
+                if len(pc_el) > 2:
+                    ind_arr = pc_el[2]
                 args.append(pc_el[1])
             elif pc_el[0] == "ID":
-                if (len(self.pars.dict[pc_el[1]]) > 3):
-                    args.append((self.pars.dict[pc_el[1]])[3])
+                if (self.pars.dict[pc_el[1]])[2] == "array":
+                    ind_arr = pc_el[2]
+                    if ((self.pars.dict[pc_el[1]])[6])[ind_arr - 1] != "no":
+                        args.append((self.pars.dict[pc_el[1]])[6][ind_arr - 1])
+                    else:
+                        raise Exception("POLIZ: indefinite identifier")
+                elif (len(self.pars.dict[pc_el[1]]) > 3):
+                        args.append((self.pars.dict[pc_el[1]])[3])
                 else:
                     raise Exception("POLIZ: indefinite identifier")
             elif pc_el[0] == "not":
@@ -52,28 +61,54 @@ class Executer():
                 value = 0
                 i = args[-1]
                 args.pop()
-                if (self.pars.dict[i])[2] == "integer":
-                    while True:
-                        print("Input int value for ", i)
-                        value = input()
-                        if value.isdigit():
+                if (self.pars.dict[i])[2] == "array":
+                    if (self.pars.dict[i])[3] == "integer":
+                        while True:
+                            print("Input int value for ", i)
+                            value = input()
+                            if value.isdigit():
+                                break
+                            else:
+                                print("Error in input: expect int number")
+                                continue
+                    else:
+                        while True:
+                            print("Input boolean value (true or false) for", i)
+                            j = input()
+                            if j != "true" and j != "false":
+                                print("Error in input:true/false")
+                                continue
+                            if j == "false":
+                                value = 0
+                            else:
+                                value = 1
                             break
-                        else:
-                            print("Error in input: expect int number")
-                            continue
+                    array = self.pars.dict[i][6]
+                    array[ind_arr - 1] = value
+                    self.pars.dict[i] = ("ID", True, (self.pars.dict[i])[2], (self.pars.dict[i])[3], (self.pars.dict[i])[4], (self.pars.dict[i])[5], array)
                 else:
-                    while True:
-                        print("Input boolean value (true or false) for", i)
-                        j = input()
-                        if j != "true" and j != "false":
-                            print("Error in input:true/false")
-                            continue
-                        if j == "false":
-                            value = 0
-                        else:
-                            value = 1
-                        break
-                self.pars.dict[i] = ("ID", True, (self.pars.dict[i])[2], int(value))
+                    if (self.pars.dict[i])[2] == "integer":
+                        while True:
+                            print("Input int value for ", i)
+                            value = input()
+                            if value.isdigit():
+                                break
+                            else:
+                                print("Error in input: expect int number")
+                                continue
+                    else:
+                        while True:
+                            print("Input boolean value (true or false) for", i)
+                            j = input()
+                            if j != "true" and j != "false":
+                                print("Error in input:true/false")
+                                continue
+                            if j == "false":
+                                value = 0
+                            else:
+                                value = 1
+                            break
+                    self.pars.dict[i] = ("ID", True, (self.pars.dict[i])[2], int(value))
             elif pc_el[0] == "+":
                 i = args[-1]
                 args.pop()
@@ -138,11 +173,17 @@ class Executer():
                 args.pop()
                 args.append(j != i)
             elif pc_el[0] == "assign":
+                print(args)
                 i = args[-1]
                 args.pop()
                 j = args[-1]
                 args.pop()
-                self.pars.dict[j] = ("ID", True, (self.pars.dict[j])[2], i)
+                if self.pars.dict[j][2] == "array":
+                    array = self.pars.dict[j][6]
+                    array[pc_el[2] - 1] = i
+                    self.pars.dict[j] = ("ID", True, (self.pars.dict[j])[2], (self.pars.dict[j])[3], (self.pars.dict[j])[4], (self.pars.dict[j])[5], array)
+                else:
+                    self.pars.dict[j] = ("ID", True, (self.pars.dict[j])[2], i)
             else:
                 raise Exception("POLIZ: unexpected elem")
             index += 1
