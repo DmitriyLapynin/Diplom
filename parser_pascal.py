@@ -9,6 +9,9 @@ class Parser():
     one_sym = ''
     poliz = []
     index_assign = 0
+    index_assign_str = ""
+    key1 = False
+    key2 = False
 
 
     def __init__(self, mode):
@@ -99,7 +102,6 @@ class Parser():
                 raise Exception("Error: expect \":\" ")
             else:
                 self.gl(f, self.dict)
-                print(self.buf)
                 if (self.buf == "integer" or self.buf == "bool" or self.buf == "array"):
                     for i in tmp_var:
                         self.dict[i] = ("ID", False, self.buf)
@@ -208,14 +210,20 @@ class Parser():
                 self.gl(f, self.dict)
                 if self.buf == '[':
                     self.gl(f, self.dict)
-                    if str(self.buf).isdigit():
+                    '''if str(self.buf).isdigit():
                         if int(self.buf) in range(self.dict[id_arr][4], self.dict[id_arr][5] + 1):
                             self.index_assign = self.buf
                             self.poliz[len(self.poliz) - 1] = ("poliz_address", self.poliz[len(self.poliz) - 1][1], self.buf)
                         else:
                             raise Exception("Error: not in range of array")
-                    #elif self.buf in self.dict:
-                    self.gl(f, self.dict)
+                    elif (self.buf in self.dict) and (self.dict[self.buf][0] == "ID"):
+                        self.index_assign_str = self.buf
+
+                        self.poliz[len(self.poliz) - 1] = ("poliz_address", self.poliz[len(self.poliz) - 1][1], self.buf)
+                    else:
+                        raise Exception("Error: expected ID or const")
+                    self.gl(f, self.dict)'''
+                    self.E(f)
                     if self.buf == ']':
                         pass
                     else:
@@ -334,8 +342,13 @@ class Parser():
             self.gl(f, self.dict)
             self.E(f)
             self.eqType()
-            self.poliz.append(("assign", 0, self.index_assign))
+            self.poliz.append(("assign", 0))
+            '''if self.index_assign_str != "":
+                self.poliz.append(("assign", 0, self.index_assign_str))
+            else:
+                self.poliz.append(("assign", 0, self.index_assign))
             self.index_assign = 0
+            self.index_assign_str = ""'''
         return
 
     def E(self, f):
@@ -368,16 +381,23 @@ class Parser():
             self.poliz.append(("ID", self.buf))
             if self.dict[self.buf][2] == "array":
                 id_arr = self.buf
+                print(self.st_lex, self.buf)
+                self.key1 = True
                 self.gl(f, self.dict)
                 if self.buf == '[':
                     self.gl(f, self.dict)
-                    if str(self.buf).isdigit():
+                    '''if str(self.buf).isdigit():
                         if int(self.buf) in range(self.dict[id_arr][4], self.dict[id_arr][5] + 1):
                             self.poliz[len(self.poliz) - 1] = ("ID", self.poliz[len(self.poliz) - 1][1], self.buf)
                         else:
                             raise Exception("Error: not in range of array")
+                    elif (self.buf in self.dict) and (self.dict[self.buf][0] == "ID"):
+                        self.poliz[len(self.poliz) - 1] = ("ID", self.poliz[len(self.poliz) - 1][1], self.buf)
+                    else:
+                        raise Exception("Error: expected ID or const")
                     # elif self.buf in self.dict:
-                    self.gl(f, self.dict)
+                    self.gl(f, self.dict)'''
+                    self.E(f)
                     if self.buf == ']':
                         pass
                     else:
@@ -385,7 +405,6 @@ class Parser():
                 else:
                     raise Exception("Error: expect \"[\" ")
             self.gl(f, self.dict)
-            print(self.buf)
         elif (self.buf in self.dict) and (self.dict[self.buf][0] == "Const"):
             self.poliz.append(("const", self.buf))
             self.gl(f, self.dict)
@@ -494,13 +513,26 @@ class Parser():
             self.gl(f, self.dict)
             if self.buf == '[':
                 self.gl(f, self.dict)
-                if str(self.buf).isdigit():
+                '''if str(self.buf).isdigit():
                     if int(self.buf) in range(self.dict[id_arr][4], self.dict[id_arr][5] + 1):
                         self.poliz[len(self.poliz) - 1] = ("poliz_address", self.poliz[len(self.poliz) - 1][1], self.buf)
                     else:
                         raise Exception("Error: not in range of array")
+                elif (self.buf in self.dict) and (self.dict[self.buf][0] == "ID"):
+                    self.poliz[len(self.poliz) - 1] = ("poliz_address", self.poliz[len(self.poliz) - 1][1], self.buf)
+                else:
+                    raise Exception("Error: expected ID or const")
                 # elif self.buf in self.dict:
-                self.gl(f, self.dict)
+                self.gl(f, self.dict)'''
+                self.E(f)
+                '''print(self.index_assign_str)
+                print(self.index_assign)
+                if self.index_assign_str != "":
+                    self.poliz.append(("assign", 0, self.index_assign_str))
+                else:
+                    self.poliz.append(("assign", 0, self.index_assign))
+                self.index_assign = 0
+                self.index_assign_str = ""'''
                 if self.buf == ']':
                     pass
                 else:

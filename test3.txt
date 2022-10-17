@@ -1,0 +1,22 @@
+program a34553;
+var i, j, k :integer;
+m:array[1..10] of integer;
+begin
+
+for i:=1 to 10 do
+  read(m[i]);
+
+for i:=1 to 9 do begin
+  for j:=1 to 10-i do begin
+    if m[j]>m[j+1] then begin
+      k:=m[j];
+      m[j]:=m[j+1];
+      m[j+1]:=k;
+    end;
+  end;
+end;
+
+for i:=1 to n do
+Write(m[i], ' ');
+
+end.
